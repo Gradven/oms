@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.channelsharing.hongqu.oms.modules.goods.dao.GoodsCategoryDao">
+
+	<sql id="goodsCategoryColumns">
+		a.id AS "id",
+		a.parent_id AS "parent.id",
+		a.parent_ids AS "parentIds",
+		a.name AS "name",
+		a.code AS "code",
+		a.pic_url AS "picUrl",
+		a.remark AS "remark",
+		a.create_by AS "createBy.id",
+		a.update_by AS "updateBy.id",
+		a.create_time AS "createTime",
+		a.update_time AS "updateTime"
+	</sql>
+
+	<sql id="goodsCategoryJoins">
+	</sql>
+
+	<select id="get" resultType="GoodsCategory">
+		SELECT
+			<include refid="goodsCategoryColumns"/>
+		FROM ${businessDbName}.goods_category a
+		<include refid="goodsCategoryJoins"/>
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="findList" resultType="GoodsCategory">
+		SELECT
+			<include refid="goodsCategoryColumns"/>
+		FROM ${businessDbName}.goods_category a
+		<include refid="goodsCategoryJoins"/>
+		<where>
+			<if test="parent != null and parent.id != null and parent.id != ''">
+				AND a.parent_id = #{parent.id}
+			</if>
+			<if test="parentIds != null and parentIds != ''">
+				AND a.parent_ids LIKE
+					CONCAT('%',#{parentIds},'%')
+			</if>
+			<if test="name != null and name != ''">
+				AND a.name LIKE
+					CONCAT('%',#{name},'%')
+			</if>
+		</where>
+	</select>
+
+	<select id="findAllList" resultType="GoodsCategory">
+		SELECT
+			<include refid="goodsCategoryColumns"/>
+		FROM ${businessDbName}.goods_category a
+		<include refid="goodsCategoryJoins"/>
+		<where>
+
+		</where>
+	</select>
+
+	<select id="findByParentIdsLike" resultType="GoodsCategory">
+		SELECT
+			a.id,
+			a.parent_id AS "parent.id",
+			a.parent_ids
+		FROM ${businessDbName}.goods_category a
+		<include refid="goodsCategoryJoins"/>
+		<where>
+			AND a.parent_ids LIKE CONCAT('%',#{parentIds},'%')
+		</where>
+	</select>
+
+	<insert id="insert">
+		INSERT INTO ${businessDbName}.goods_category(
+			id,
+			parent_id,
+			parent_ids,
+			name,
+			code,
+			pic_url,
+			remark,
+			create_by,
+			update_by,
+			create_time,
+			update_time
+		) VALUES (
+			#{id},
+			#{parent.id},
+			#{parentIds},
+			#{name},
+			#{code},
+			#{picUrl},
+			#{remark},
+			#{createBy.id},
+			#{updateBy.id},
+			#{createTime},
+			#{updateTime}
+		)
+	</insert>
+
+	<update id="update">
+		UPDATE ${businessDbName}.goods_category SET
+			parent_id = #{parent.id},
+			parent_ids = #{parentIds},
+			name = #{name},
+			code = #{code},
+			pic_url = #{picUrl},
+			remark = #{remark},
+			update_by = #{updateBy.id},
+			update_time = #{updateTime}
+		WHERE id = #{id}
+	</update>
+
+	<update id="updateParentIds">
+		UPDATE ${businessDbName}.goods_category SET
+			parent_id = #{parent.id},
+			parent_ids = #{parentIds}
+		WHERE id = #{id}
+	</update>
+
+	<update id="delete">
+		DELETE FROM ${businessDbName}.goods_category
+		WHERE id = #{id} OR parent_ids LIKE  CONCAT('%,',#{id},',%')
+	</update>
+
+	<select id="findByIds" resultType="GoodsInfo">
+		SELECT
+		a.id AS "id",
+		a.name AS "name"
+		FROM ${businessDbName}.goods_category a
+		WHERE id IN (${ids})
+	</select>
+</mapper>

@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.channelsharing.hongqu.oms.modules.invitation.dao.InvitationCodeOperDao">
+
+	<sql id="invitationCodeOperColumns">
+		a.id AS "id",
+		a.code AS "code",
+		a.user_id AS "userId",
+		a.create_by AS "createBy.id",
+		b.name AS "createBy.name",
+		a.create_time AS "createTime"
+	</sql>
+
+	<sql id="invitationCodeOperJoins">
+		LEFT JOIN sys_user b ON a.create_by = b.id
+	</sql>
+
+	<select id="get" resultType="InvitationCodeOper">
+		SELECT
+			<include refid="invitationCodeOperColumns"/>
+		FROM ${businessDbName}.invitation_code_oper a
+		<include refid="invitationCodeOperJoins"/>
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="findList" resultType="InvitationCodeOper">
+		SELECT
+			<include refid="invitationCodeOperColumns"/>
+		FROM ${businessDbName}.invitation_code_oper a
+		<include refid="invitationCodeOperJoins"/>
+		<where>
+
+			<if test="id != null and id != '' ">
+				AND a.id = #{id}
+			</if>
+			<if test="code != null and code != '' ">
+				AND a.code = #{code}
+			</if>
+			<if test="userId != null and userId != '' ">
+				AND a.user_id = #{userId}
+			</if>
+			<if test="createBy != null and createBy != ''  and createBy.id != null">
+				AND a.create_by = #{createBy.id}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.id DESC
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="findAllList" resultType="InvitationCodeOper">
+		SELECT
+			<include refid="invitationCodeOperColumns"/>
+		FROM ${businessDbName}.invitation_code_oper a
+		<include refid="invitationCodeOperJoins"/>
+		<where>
+
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+
+	<insert id="insert">
+		INSERT INTO ${businessDbName}.invitation_code_oper(
+			id,
+			code,
+			user_id,
+			create_by,
+			create_time
+		) VALUES (
+			#{id},
+			#{code},
+			#{userId},
+			#{createBy.id},
+			#{createTime}
+		)
+	</insert>
+
+	<update id="update">
+		UPDATE ${businessDbName}.invitation_code_oper SET
+			code = #{code},
+			user_id = #{userId}
+		WHERE id = #{id}
+	</update>
+
+	<update id="delete">
+		DELETE FROM ${businessDbName}.invitation_code_oper
+		WHERE id = #{id}
+	</update>
+
+</mapper>

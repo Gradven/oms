@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.channelsharing.hongqu.oms.modules.goods.dao.GoodsDescriptionDao">
+
+	<sql id="goodsDescriptionColumns">
+		a.id AS "id",
+		a.content AS "content",
+		a.create_time AS "createTime",
+		a.update_time AS "updateTime",
+		a.del_flag AS "delFlag"
+	</sql>
+
+	<sql id="goodsDescriptionJoins">
+	</sql>
+
+	<select id="get" resultType="GoodsDescription">
+		SELECT
+			<include refid="goodsDescriptionColumns"/>
+		FROM ${businessDbName}.goods_description a
+		<include refid="goodsDescriptionJoins"/>
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="findList" resultType="GoodsDescription">
+		SELECT
+			<include refid="goodsDescriptionColumns"/>
+		FROM ${businessDbName}.goods_description a
+		<include refid="goodsDescriptionJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="id != null and id != '' ">
+				AND a.id = #{id}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.id DESC
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="findAllList" resultType="GoodsDescription">
+		SELECT
+			<include refid="goodsDescriptionColumns"/>
+		FROM ${businessDbName}.goods_description a
+		<include refid="goodsDescriptionJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_time DESC
+			</otherwise>
+		</choose>
+	</select>
+
+	<insert id="insert">
+		INSERT INTO ${businessDbName}.goods_description(
+			id,
+			content,
+			create_time,
+			update_time,
+			del_flag
+		) VALUES (
+			#{id},
+			#{content},
+			#{createTime},
+			#{updateTime},
+			#{delFlag}
+		)
+	</insert>
+
+	<update id="update">
+		UPDATE ${businessDbName}.goods_description SET
+			content = #{content},
+			update_time = #{updateTime}
+		WHERE id = #{id}
+	</update>
+
+	<update id="delete">
+		UPDATE ${businessDbName}.goods_description SET
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+
+</mapper>

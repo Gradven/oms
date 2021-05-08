@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.channelsharing.hongqu.oms.modules.resource.dao.ResInfoDao">
+
+	<sql id="resInfoColumns">
+		a.id AS "id",
+		a.uri AS "uri",
+		a.res_key AS "resKey",
+		a.type AS "type",
+		a.title AS "title",
+		a.remark AS "remark",
+		a.create_by AS "createBy.id",
+		a.create_time AS "createTime",
+		a.update_by AS "updateBy.id",
+		a.update_time AS "updateTime"
+	</sql>
+
+	<sql id="resInfoJoins">
+	</sql>
+
+	<select id="get" resultType="ResInfo">
+		SELECT
+			<include refid="resInfoColumns"/>
+		FROM ${businessDbName}.res_info a
+		<include refid="resInfoJoins"/>
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="findList" resultType="ResInfo">
+		SELECT
+			<include refid="resInfoColumns"/>
+		FROM ${businessDbName}.res_info a
+		<include refid="resInfoJoins"/>
+		<where>
+
+			<if test="title != null and title != '' ">
+				AND a.title LIKE
+					CONCAT('%',#{title},'%')
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.id DESC
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="findAllList" resultType="ResInfo">
+		SELECT
+			<include refid="resInfoColumns"/>
+		FROM ${businessDbName}.res_info a
+		<include refid="resInfoJoins"/>
+		<where>
+
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+
+	<insert id="insert">
+		INSERT INTO ${businessDbName}.res_info(
+			id,
+			uri,
+			res_key,
+			type,
+			title,
+			remark,
+			create_by,
+			create_time,
+			update_by,
+			update_time
+		) VALUES (
+			#{id},
+			#{uri},
+			#{resKey},
+			#{type},
+			#{title},
+			#{remark},
+			#{createBy.id},
+			#{createTime},
+			#{updateBy.id},
+			#{updateTime}
+		)
+	</insert>
+
+	<update id="update">
+		UPDATE ${businessDbName}.res_info SET
+			uri = #{uri},
+			res_key = #{resKey},
+			type = #{type},
+			title = #{title},
+			remark = #{remark}
+		WHERE id = #{id}
+	</update>
+
+	<update id="delete">
+		DELETE FROM ${businessDbName}.res_info
+		WHERE id = #{id}
+	</update>
+
+</mapper>

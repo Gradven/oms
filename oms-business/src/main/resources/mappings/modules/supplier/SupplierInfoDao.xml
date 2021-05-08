@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.channelsharing.hongqu.oms.modules.supplier.dao.SupplierInfoDao">
+
+	<sql id="supplierInfoColumns">
+		a.id AS "id",
+		a.name AS "name",
+		a.credit_code AS "creditCode",
+		a.license_img AS "licenseImg",
+		a.legal_representative AS "legalRepresentative",
+		a.reg_province AS "regProvince",
+		a.address AS "address",
+		a.contact AS "contact",
+		a.mobile AS "mobile",
+		a.phone AS "phone",
+		a.email AS "email",
+		a.status AS "status",
+		a.service_tel AS "serviceTel",
+		a.service_qq AS "serviceQQ",
+		a.service_weixin AS "serviceWeiXin",
+		a.service_address AS "serviceAddress",
+		a.create_time AS "createTime",
+		a.update_time AS "updateTime"
+	</sql>
+
+	<sql id="supplierInfoJoins">
+	</sql>
+
+	<select id="get" resultType="SupplierInfo">
+		SELECT
+			<include refid="supplierInfoColumns"/>
+		FROM ${businessDbName}.supplier_info a
+		<include refid="supplierInfoJoins"/>
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="findList" resultType="SupplierInfo">
+		SELECT
+			<include refid="supplierInfoColumns"/>
+		FROM ${businessDbName}.supplier_info a
+		<include refid="supplierInfoJoins"/>
+		<where>
+
+			<if test="id != null and id != '' ">
+				AND a.id = #{id}
+			</if>
+			<if test="name != null and name != '' ">
+				AND a.name LIKE
+					CONCAT('%',#{name},'%')
+			</if>
+			<if test="status != null and status != '' ">
+				AND a.status = #{status}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.id DESC
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="findAllList" resultType="SupplierInfo">
+		SELECT
+			<include refid="supplierInfoColumns"/>
+		FROM ${businessDbName}.supplier_info a
+		<include refid="supplierInfoJoins"/>
+		<where>
+
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_time DESC
+			</otherwise>
+		</choose>
+	</select>
+
+	<insert id="insert">
+		INSERT INTO ${businessDbName}.supplier_info(
+			id,
+			name,
+			credit_code,
+			license_img,
+			legal_representative,
+			reg_province,
+			address,
+			contact,
+			mobile,
+			phone,
+			email,
+			status,
+			a.service_tel,
+		    service_qq,
+		 	service_weixin,
+		 	service_address,
+			create_time,
+			update_time
+		) VALUES (
+			#{id},
+			#{name},
+			#{creditCode},
+			#{licenseImg},
+			#{legalRepresentative},
+			#{regProvince},
+			#{address},
+			#{contact},
+			#{mobile},
+			#{phone},
+			#{email},
+			#{status},
+			#{serviceTel},
+			#{serviceQQ},
+			#{serviceWeiXin},
+			#{serviceAddress},
+			#{createTime},
+			#{updateTime}
+		)
+	</insert>
+
+	<update id="update">
+		UPDATE ${businessDbName}.supplier_info SET
+			name = #{name},
+			credit_code = #{creditCode},
+			license_img = #{licenseImg},
+			legal_representative = #{legalRepresentative},
+			reg_province = #{regProvince},
+			address = #{address},
+			contact = #{contact},
+			mobile = #{mobile},
+			phone = #{phone},
+			email = #{email},
+			status = #{status},
+			service_tel = #{serviceTel},
+			service_qq = #{serviceQQ},
+			service_weixin = #{serviceWeiXin},
+			service_address = #{serviceAddress},
+			update_time = #{updateTime}
+		WHERE id = #{id}
+	</update>
+
+	<update id="delete">
+		DELETE FROM ${businessDbName}.supplier_info
+		WHERE id = #{id}
+	</update>
+
+</mapper>

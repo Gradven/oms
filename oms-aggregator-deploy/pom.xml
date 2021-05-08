@@ -1,0 +1,98 @@
+<?xml version="1.0"?>
+<project
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>com.channelsharing.hongqu.oms</groupId>
+		<artifactId>oms-parent</artifactId>
+		<version>1.0.0</version>
+		<relativePath>../pom.xml</relativePath>
+	</parent>
+
+	<properties>
+	   <project.version>1.0.0</project.version>
+	</properties>
+
+	<artifactId>oms-aggregator-deploy</artifactId>
+	<packaging>war</packaging>
+	<name>oms-aggregator</name>
+	<url>http://maven.apache.org</url>
+
+	<dependencies>
+
+		<dependency>
+			<groupId>com.channelsharing.hongqu.oms</groupId>
+			<artifactId>oms-base</artifactId>
+			<version>${project.version}</version>
+			<type>war</type>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.channelsharing.hongqu.oms</groupId>
+			<artifactId>oms-pub</artifactId>
+			<version>${project.version}</version>
+			<type>war</type>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.channelsharing.hongqu.oms</groupId>
+			<artifactId>oms-business</artifactId>
+			<version>${project.version}</version>
+			<type>war</type>
+			<scope>runtime</scope>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<finalName>ROOT</finalName>
+		<defaultGoal>clean,compile</defaultGoal>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-war-plugin</artifactId>
+				<version>3.2.0</version>
+				<configuration>
+					<packagingExcludes>WEB-INF/web.xml</packagingExcludes>
+					<failOnMissingWebXml>false</failOnMissingWebXml>
+					<overlays>
+						<overlay>
+							<groupId>com.channelsharing.hongqu.oms</groupId>
+							<artifactId>oms-base</artifactId>
+						</overlay>
+						<overlay>
+							<groupId>com.channelsharing.hongqu.oms</groupId>
+							<artifactId>oms-pub</artifactId>
+						</overlay>
+						<overlay>
+							<groupId>com.channelsharing.hongqu.oms</groupId>
+							<artifactId>oms-business</artifactId>
+						</overlay>
+					</overlays>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<profiles>
+		<profile>
+			<id>dev</id>
+			<properties>
+				<profiles.activation>dev</profiles.activation>
+			</properties>
+		</profile>
+		<profile>
+			<id>test</id>
+			<properties>
+				<profiles.activation>test</profiles.activation>
+			</properties>
+		</profile>
+		<profile>
+			<id>prod</id>
+			<properties>
+				<profiles.activation>prod</profiles.activation>
+			</properties>
+		</profile>
+	</profiles>
+</project>

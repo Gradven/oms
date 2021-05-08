@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.channelsharing.hongqu.oms.modules.page.dao.PageFragmentDao">
+
+	<sql id="pageFragmentColumns">
+		a.id AS "id",
+		a.page_id AS "pageId",
+		a.keyword AS "keyword",
+		a.type AS "type",
+		a.name AS "name",
+		a.value AS "value",
+		a.remark AS "remark",
+		a.create_by AS "createBy.id",
+		a.update_by AS "updateBy.id",
+		a.create_time AS "createTime",
+		a.update_time  AS "updateTime "
+	</sql>
+
+	<sql id="pageFragmentJoins">
+	</sql>
+
+	<select id="get" resultType="PageFragment">
+		SELECT
+			<include refid="pageFragmentColumns"/>
+		FROM ${businessDbName}.page_fragment a
+		<include refid="pageFragmentJoins"/>
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="findList" resultType="PageFragment">
+		SELECT
+			<include refid="pageFragmentColumns"/>
+		FROM ${businessDbName}.page_fragment a
+		<include refid="pageFragmentJoins"/>
+		<where>
+
+			<if test="pageId != null and pageId != '' ">
+				AND a.page_id = #{pageId}
+			</if>
+			<if test="keyword != null and keyword != '' ">
+				AND a.keyword = #{keyword}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.id DESC
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="findAllList" resultType="PageFragment">
+		SELECT
+			<include refid="pageFragmentColumns"/>
+		FROM ${businessDbName}.page_fragment a
+		<include refid="pageFragmentJoins"/>
+		<where>
+
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+
+	<insert id="insert">
+		INSERT INTO ${businessDbName}.page_fragment(
+			id,
+			page_id,
+			keyword,
+			type,
+			name,
+			value,
+			remark,
+			create_by,
+			update_by,
+			create_time
+		) VALUES (
+			#{id},
+			#{pageId},
+			#{keyword},
+			#{type},
+			#{name},
+			#{value},
+			#{remark},
+			#{createBy.id},
+			#{updateBy.id},
+			#{createTime}
+		)
+	</insert>
+
+	<update id="update">
+		UPDATE ${businessDbName}.page_fragment SET
+			page_id = #{pageId},
+			keyword = #{keyword},
+			type = #{type},
+			name = #{name},
+			value = #{value},
+			remark = #{remark},
+			update_by = #{updateBy.id},
+			update_time  = NOW()
+		WHERE id = #{id}
+	</update>
+
+	<update id="delete">
+		DELETE FROM ${businessDbName}.page_fragment
+		WHERE id = #{id}
+	</update>
+
+</mapper>

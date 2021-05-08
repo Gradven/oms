@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.channelsharing.hongqu.oms.modules.supplier.dao.SupplierUserDao">
+
+	<sql id="supplierUserColumns">
+		a.id AS "id",
+		a.name AS "name",
+		a.password AS "password",
+		a.age AS "age",
+		a.account AS "account",
+		a.mobile AS "mobile",
+		a.email AS "email",
+		a.status AS "status",
+		a.supplier_id AS "supplierId",
+		a.remark AS "remark",
+		a.create_by AS "createBy.id",
+		a.update_by AS "updateBy.id",
+		a.create_time AS "createTime",
+		a.update_time AS "updateTime"
+	</sql>
+
+	<sql id="supplierUserJoins">
+	</sql>
+
+	<select id="get" resultType="SupplierUser">
+		SELECT
+			<include refid="supplierUserColumns"/>
+		FROM ${businessDbName}.supplier_user a
+		<include refid="supplierUserJoins"/>
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="findList" resultType="SupplierUser">
+		SELECT
+			<include refid="supplierUserColumns"/>
+		FROM ${businessDbName}.supplier_user a
+		<include refid="supplierUserJoins"/>
+		<where>
+
+			<if test="id != null and id != '' ">
+				AND a.id = #{id}
+			</if>
+			<if test="name != null and name != '' ">
+				AND a.name LIKE
+					CONCAT('%',#{name},'%')
+			</if>
+			<if test="status != null and status != '' ">
+				AND a.status = #{status}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.id DESC
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="findAllList" resultType="SupplierUser">
+		SELECT
+			<include refid="supplierUserColumns"/>
+		FROM ${businessDbName}.supplier_user a
+		<include refid="supplierUserJoins"/>
+		<where>
+
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_time DESC
+			</otherwise>
+		</choose>
+	</select>
+
+	<insert id="insert">
+		INSERT INTO ${businessDbName}.supplier_user(
+			id,
+			name,
+			password,
+			age,
+			account,
+			mobile,
+			email,
+			status,
+			supplier_id,
+			remark,
+			create_by,
+			update_by,
+			create_time,
+			update_time
+		) VALUES (
+			#{id},
+			#{name},
+			#{password},
+			#{age},
+			#{account},
+			#{mobile},
+			#{email},
+			#{status},
+			#{supplierId},
+			#{remark},
+			#{createBy.id},
+			#{updateBy.id},
+			#{createTime},
+			#{updateTime}
+		)
+	</insert>
+
+	<update id="update">
+		UPDATE ${businessDbName}.supplier_user SET
+			name = #{name},
+			password = #{password},
+			age = #{age},
+			account = #{account},
+			mobile = #{mobile},
+			email = #{email},
+			status = #{status},
+			supplier_id = #{supplierId},
+			remark = #{remark},
+			update_by = #{updateBy.id},
+			update_time = #{updateTime}
+		WHERE id = #{id}
+	</update>
+
+	<update id="delete">
+		DELETE FROM ${businessDbName}.supplier_user
+		WHERE id = #{id}
+	</update>
+
+</mapper>

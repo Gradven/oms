@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.channelsharing.hongqu.oms.modules.config.dao.ConfigParamDao">
+
+	<sql id="configParamColumns">
+		a.id AS "id",
+		a.config_key AS "configKey",
+		a.config_value AS "configValue",
+		a.module_id AS "moduleId",
+		a.description AS "description",
+		a.create_by AS "createBy.id",
+		a.create_time AS "createTime",
+		a.update_by AS "updateBy.id",
+		a.update_time AS "updateTime",
+		a.remark AS "remark",
+		a.del_flag AS "delFlag"
+	</sql>
+
+	<sql id="configParamJoins">
+	</sql>
+
+	<select id="get" resultType="ConfigParam">
+		SELECT
+			<include refid="configParamColumns"/>
+		FROM ${businessDbName}.config_param a
+		<include refid="configParamJoins"/>
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="findList" resultType="ConfigParam">
+		SELECT
+			<include refid="configParamColumns"/>
+		FROM ${businessDbName}.config_param a
+		<include refid="configParamJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="configKey != null and configKey != '' ">
+				AND a.config_key = #{configKey}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.id ASC
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="findAllList" resultType="ConfigParam">
+		SELECT
+			<include refid="configParamColumns"/>
+		FROM ${businessDbName}.config_param a
+		<include refid="configParamJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+
+	<insert id="insert">
+		INSERT INTO ${businessDbName}.config_param(
+			id,
+			config_key,
+			config_value,
+			module_id,
+			description,
+			create_by,
+			create_time,
+			update_by,
+			update_time,
+			remark,
+			del_flag
+		) VALUES (
+			#{id},
+			#{configKey},
+			#{configValue},
+			#{moduleId},
+			#{description},
+			#{createBy.id},
+			#{createTime},
+			#{updateBy.id},
+			#{updateTime},
+			#{remark},
+			#{delFlag}
+		)
+	</insert>
+
+	<update id="update">
+		UPDATE ${businessDbName}.config_param SET
+			config_key = #{configKey},
+			config_value = #{configValue},
+			module_id = #{moduleId},
+			description = #{description},
+			remark = #{remark}
+		WHERE id = #{id}
+	</update>
+
+	<update id="delete">
+		UPDATE ${businessDbName}.config_param SET
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+
+</mapper>

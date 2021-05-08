@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.channelsharing.hongqu.oms.modules.user.dao.UserInfoDao">
+
+	<sql id="userInfoColumns">
+		a.id AS "id",
+		a.nickname AS "nickname",
+		a.mobile AS "mobile",
+		a.email AS "email",
+		a.address AS "address",
+		a.company AS "company",
+		a.contact AS "contact",
+		a.password AS "password",
+		a.login_error_times AS "loginErrorTimes",
+		a.sex AS "sex",
+		a.avatar AS "avatar",
+		a.status AS "status",
+		a.activation_code AS "activationCode",
+		a.third_party_user_id AS "thirdPartyUserId",
+		a.account_type AS "accountType",
+		a.shop_id AS "shopId",
+		a.country AS "country",
+		a.province AS "province",
+		a.city AS "city",
+		a.description AS "description",
+		a.create_time AS "createTime",
+		a.update_time AS "updateTime"
+	</sql>
+
+	<sql id="userInfoJoins">
+	</sql>
+
+	<select id="get" resultType="UserInfo">
+		SELECT
+			<include refid="userInfoColumns"/>
+		FROM ${businessDbName}.user_info a
+		<include refid="userInfoJoins"/>
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="findList" resultType="UserInfo">
+		SELECT
+			<include refid="userInfoColumns"/>
+		FROM ${businessDbName}.user_info a
+		<include refid="userInfoJoins"/>
+		<where>
+			<if test="id != null and id != '' ">
+				 a.id = #{id}
+			</if>
+
+			<if test="nickname != null and nickname != '' ">
+				AND a.nickname LIKE CONCAT('%',#{nickname},'%')
+			</if>
+
+			<if test="email != null and email != '' ">
+				AND a.email = #{email}
+			</if>
+
+
+			<if test="mobile != null and mobile != '' ">
+				AND a.mobile = #{mobile}
+			</if>
+
+			<if test="status != null and status != '' ">
+				AND a.status = #{status}
+			</if>
+
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.id DESC
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="findAllList" resultType="UserInfo">
+		SELECT
+			<include refid="userInfoColumns"/>
+		FROM ${businessDbName}.user_info a
+		<include refid="userInfoJoins"/>
+		<where>
+
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_time DESC
+			</otherwise>
+		</choose>
+	</select>
+
+	<insert id="insert">
+		INSERT INTO ${businessDbName}.user_info(
+			id,
+			nickname,
+			mobile,
+			email,
+			address,
+			company,
+			contact,
+			password,
+			login_error_times,
+			sex,
+			avatar,
+			status,
+			activation_code,
+			third_party_user_id,
+			account_type,
+			shop_id,
+			country,
+			province,
+			city,
+			description,
+			create_time,
+			update_time
+		) VALUES (
+			#{id},
+			#{nickname},
+			#{mobile},
+			#{email},
+			#{address},
+			#{company},
+			#{contact},
+			#{password},
+			#{loginErrorTimes},
+			#{sex},
+			#{avatar},
+			#{status},
+			#{activationCode},
+			#{thirdPartyUserId},
+			#{accountType},
+			#{shopId},
+			#{country},
+			#{province},
+			#{city},
+			#{description},
+			#{createTime},
+			#{updateTime}
+		)
+	</insert>
+
+	<update id="update">
+		UPDATE ${businessDbName}.user_info SET
+			nickname = #{nickname},
+		<if test="mobile != null and mobile != '' ">
+			mobile = #{mobile},
+		</if>
+		<if test="email != null and email != '' ">
+			email = #{email},
+		</if>
+		<if test="password != null and password != '' ">
+			password = #{password},
+		</if>
+			address = #{address},
+			company = #{company},
+			contact = #{contact},
+			login_error_times = #{loginErrorTimes},
+			sex = #{sex},
+			avatar = #{avatar},
+			status = #{status},
+			activation_code = #{activationCode},
+			third_party_user_id = #{thirdPartyUserId},
+			account_type = #{accountType},
+			shop_id = #{shopId},
+			country = #{country},
+			province = #{province},
+			city = #{city},
+			description = #{description},
+			update_time = #{updateTime}
+		WHERE id = #{id}
+	</update>
+
+	<update id="delete">
+		DELETE FROM ${businessDbName}.user_info
+		WHERE id = #{id}
+	</update>
+
+</mapper>

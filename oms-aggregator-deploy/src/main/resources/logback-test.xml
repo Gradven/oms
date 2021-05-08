@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true">
+	<property name="APP_NAME" value="x-oms" />
+	<contextName>${APP_NAME}</contextName>
+
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<!-- encoder 默认配置为PatternLayoutEncoder -->
+		<encoder>
+			<pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n
+			</pattern>
+		</encoder>
+	</appender>
+
+	 <logger name="com.channelsharing.hongqu.oms" level="debug" />
+	 <logger name="com.channelsharing.hongqu.oms.common.security.shiro" level="WARN" />
+	 <logger name="com.channelsharing.hongqu.oms.common.utils.JedisUtils" level="WARN" />
+	 <logger name="com.channelsharing.hongqu.oms.modules.sys.web.LoginController" level="WARN" />
+
+	<root level="INFO">
+		<appender-ref ref="STDOUT" />
+	</root>
+</configuration>

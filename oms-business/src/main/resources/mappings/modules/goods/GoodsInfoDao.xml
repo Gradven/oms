@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.channelsharing.hongqu.oms.modules.goods.dao.GoodsInfoDao">
+
+    <sql id="goodsInfoColumns">
+		a.cover as "cover",
+		a.id AS "id",
+		a.sn AS "sn",
+		a.category_id AS "categoryId",
+		a.pic_urls AS "picUrls",
+		a.supplier_id AS "supplierId",
+		a.name AS "name",
+		a.keywords AS "keywords",
+		a.sales_volume AS "salesVolume",
+		a.retail_price AS "retailPrice",
+		a.store_number AS "storeNumber",
+		a.unit_price AS "unitPrice",
+		a.unit AS "unit",
+		a.profit AS "profit",
+		a.on_sale_flag AS "onSaleFlag",
+		a.del_flag AS "delFlag",
+		a.short_description AS "shortDescription",
+		a.create_su_id AS "createSuId",
+		a.update_su_id AS "updateSuId",
+		a.approve_status AS "approveStatus",
+		a.create_time AS "createTime",
+		a.update_time AS "updateTime",
+		b.name AS "supplierName"
+	</sql>
+
+    <select id="findList" resultType="GoodsInfo">
+        SELECT
+        a.id AS "id",
+		a.cover as "cover",
+        a.sn as "sn" ,
+        a.category_id as "categoryId" ,
+        a.pic_urls as "picUrls" ,
+        a.supplier_id as "supplierId" ,
+        a.name as "name" ,
+        a.keywords as "keywords" ,
+        a.sales_volume as "salesVolume" ,
+        b. name as "supplierName" ,
+        a.unit AS "unit" ,
+        a.on_sale_flag AS "onSaleFlag" ,
+        a.del_flag AS "delFlag" ,
+        a.short_description AS "shortDescription" ,
+        a.create_su_id AS "createSuId" ,
+        a.update_su_id AS "updateSuId" ,
+        a.approve_status AS "approveStatus" ,
+        a.create_time AS "createTime" ,
+        a.update_time AS "updateTime" ,
+		a.retail_price as 'retailPrice' ,
+		a.unit_price as 'unitPrice' ,
+		a.profit as 'profit',
+		c.*,
+		d.name AS "categoryName"
+		from
+        ${businessDbName}.goods_info a ,
+        ${businessDbName}.supplier_info b,
+		${businessDbName}.goods_category d,
+        (select goods_id as "goodsId",
+        SUM(store_number) as 'storeNumber'
+		from ${businessDbName}.product_info where del_flag = #{DEL_FLAG_NORMAL} group by goods_id) c
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+			and b.id = a.supplier_id
+			and c.goodsId = a.id
+			and d.id = a.category_id
+            <if test="sn != null and sn != '' ">
+                AND a.sn = #{sn}
+            </if>
+            <if test="approveStatus != null and approveStatus!=-1">
+                AND a.approve_status = #{approveStatus}
+            </if>
+            <if test="onSaleFlag != null and onSaleFlag!=-1 ">
+                AND a.on_sale_flag = #{onSaleFlag}
+            </if>
+            <if test="supplierName != null and supplierName != '' ">
+                AND b.name LIKE CONCAT('%',#{supplierName},'%')
+            </if>
+            <if test="name != null and name != '' ">
+                AND a.name LIKE
+                CONCAT('%',#{name},'%')
+            </if>
+        </where>
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY ${page.orderBy}
+            </when>
+            <otherwise>
+                ORDER BY a.update_time DESC
+            </otherwise>
+        </choose>
+
+    </select>
+
+    <sql id="goodsInfoJoins">
+		LEFT JOIN ${businessDbName}.supplier_info b ON a.supplier_id = b.id
+	</sql>
+
+    <select id="get" resultType="GoodsInfo">
+        SELECT
+        <include refid="goodsInfoColumns"/>
+        FROM ${businessDbName}.goods_info a
+        <include refid="goodsInfoJoins"/>
+        WHERE a.id = #{id}
+    </select>
+
+
+
+    <select id="findAllList" resultType="GoodsInfo">
+        SELECT
+        <include refid="goodsInfoColumns"/>
+        FROM ${businessDbName}.goods_info a
+        <include refid="goodsInfoJoins"/>
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+        </where>
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY ${page.orderBy}
+            </when>
+            <otherwise>
+                ORDER BY a.update_time DESC
+            </otherwise>
+        </choose>
+    </select>
+
+    <insert id="insert">
+		INSERT INTO ${businessDbName}.goods_info(
+			id,
+			sn,
+			category_id,
+			pic_urls,
+			supplier_id,
+			name,
+			keywords,
+			sales_volume,
+			retail_price,
+			store_number,
+			unit_price,
+			unit,
+			profit,
+			on_sale_flag,
+			del_flag,
+			short_description,
+			create_su_id,
+			update_su_id,
+			approve_status,
+			create_time,
+			update_time
+		) VALUES (
+			#{id},
+			#{sn},
+			#{categoryId},
+			#{picUrls},
+			#{supplierId},
+			#{name},
+			#{keywords},
+			#{salesVolume},
+			#{retailPrice},
+			#{storeNumber},
+			#{unitPrice},
+			#{unit},
+			#{profit},
+			#{onSaleFlag},
+			#{delFlag},
+			#{shortDescription},
+			#{createSuId},
+			#{updateSuId},
+			#{approveStatus},
+			#{createTime},
+			#{updateTime}
+		)
+	</insert>
+
+    <update id="update">
+		UPDATE ${businessDbName}.goods_info SET
+			sn = #{sn},
+			category_id = #{categoryId},
+			pic_urls = #{picUrls},
+			supplier_id = #{supplierId},
+			name = #{name},
+			keywords = #{keywords},
+			on_sale_flag = #{onSaleFlag},
+			del_flag = #{delFlag},
+			short_description = #{shortDescription},
+			approve_status = #{approveStatus},
+			create_su_id = #{createSuId},
+			update_su_id = #{updateSuId}
+		WHERE id = #{id}
+	</update>
+
+    <update id="delete">
+		UPDATE ${businessDbName}.goods_info SET
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+
+	<select id="findByIds" resultType="GoodsInfo">
+		SELECT
+		a.id AS "id",
+		a.cover as "cover",
+		a.name AS "name"
+		FROM ${businessDbName}.goods_info a
+		WHERE id IN (${ids})
+	</select>
+</mapper>

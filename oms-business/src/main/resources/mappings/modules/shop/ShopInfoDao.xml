@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.channelsharing.hongqu.oms.modules.shop.dao.ShopInfoDao">
+
+	<sql id="shopInfoColumns">
+		a.id AS "id",
+		a.name AS "name",
+		a.logo AS "logo",
+		a.description AS "description",
+		a.background_url AS "backgroundUrl",
+		a.user_id AS "userId",
+		a.certificate_flag AS "certificateFlag",
+		a.pay_fee_flag AS "payFeeFlag",
+		a.expire_time AS "expireTime",
+		a.create_time AS "createTime",
+		a.update_time AS "updateTime"
+	</sql>
+
+	<sql id="shopInfoJoins">
+	</sql>
+
+	<select id="get" resultType="ShopInfo">
+		SELECT
+			<include refid="shopInfoColumns"/>
+		FROM ${businessDbName}.shop_info a
+		<include refid="shopInfoJoins"/>
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="findList" resultType="ShopInfo">
+		SELECT
+			<include refid="shopInfoColumns"/>
+		FROM ${businessDbName}.shop_info a
+		<include refid="shopInfoJoins"/>
+		<where>
+			
+			<if test="name != null and name != '' ">
+				AND a.name LIKE
+					CONCAT('%',#{name},'%')
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.id DESC
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="findAllList" resultType="ShopInfo">
+		SELECT
+			<include refid="shopInfoColumns"/>
+		FROM ${businessDbName}.shop_info a
+		<include refid="shopInfoJoins"/>
+		<where>
+			
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_time DESC
+			</otherwise>
+		</choose>
+	</select>
+
+	<insert id="insert">
+		INSERT INTO ${businessDbName}.shop_info(
+			id,
+			name,
+			logo,
+			description,
+			background_url,
+			user_id,
+			certificate_flag,
+			pay_fee_flag,
+			expire_time,
+			create_time,
+			update_time
+		) VALUES (
+			#{id},
+			#{name},
+			#{logo},
+			#{description},
+			#{backgroundUrl},
+			#{userId},
+			#{certificateFlag},
+			#{payFeeFlag},
+			#{expireTime},
+			#{createTime},
+			#{updateTime}
+		)
+	</insert>
+
+	<update id="update">
+		UPDATE ${businessDbName}.shop_info SET
+			name = #{name},
+			logo = #{logo},
+			description = #{description}
+		WHERE id = #{id}
+	</update>
+
+	<update id="delete">
+		DELETE FROM ${businessDbName}.shop_info
+		WHERE id = #{id}
+	</update>
+
+	<select id="findByIds" resultType="ShopInfo">
+		SELECT
+		a.id AS "id",
+		a.name AS "name",
+		a.logo as "logo"
+		FROM ${businessDbName}.shop_info a
+		WHERE id IN (${ids})
+	</select>
+</mapper>

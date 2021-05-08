@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.channelsharing.hongqu.oms.modules.page.dao.PageInfoDao">
+
+	<sql id="pageInfoColumns">
+		a.id AS "id",
+		a.parent_id AS "parent.id",
+		a.parent_ids AS "parentIds",
+		a.name AS "name",
+		a.create_by AS "createBy.id",
+		a.update_by AS "updateBy.id",
+		a.create_time AS "createTime",
+		a.update_time AS "updateTime",
+		a.remark AS "remark"
+	</sql>
+
+	<sql id="pageInfoJoins">
+	</sql>
+
+	<select id="get" resultType="PageInfo">
+		SELECT
+			<include refid="pageInfoColumns"/>
+		FROM ${businessDbName}.page_info a
+		<include refid="pageInfoJoins"/>
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="findList" resultType="PageInfo">
+		SELECT
+			<include refid="pageInfoColumns"/>
+		FROM ${businessDbName}.page_info a
+		<include refid="pageInfoJoins"/>
+		<where>
+			
+			<if test="parent != null and parent.id != null and parent.id != ''">
+				AND a.parent_id = #{parent.id}
+			</if>
+			<if test="parentIds != null and parentIds != ''">
+				AND a.parent_ids LIKE
+					CONCAT('%',#{parentIds},'%')
+			</if>
+			<if test="name != null and name != ''">
+				AND a.name LIKE
+					CONCAT('%',#{name},'%')
+			</if>
+		</where>
+	</select>
+
+	<select id="findAllList" resultType="PageInfo">
+		SELECT
+			<include refid="pageInfoColumns"/>
+		FROM ${businessDbName}.page_info a
+		<include refid="pageInfoJoins"/>
+		<where>
+			
+		</where>
+	</select>
+
+	<select id="findByParentIdsLike" resultType="PageInfo">
+		SELECT
+			a.id,
+			a.parent_id AS "parent.id",
+			a.parent_ids
+		FROM ${businessDbName}.page_info a
+		<include refid="pageInfoJoins"/>
+		<where>
+			
+			AND a.parent_ids LIKE CONCAT('%',#{parentIds},'%')
+		</where>
+	</select>
+
+	<insert id="insert">
+		INSERT INTO ${businessDbName}.page_info(
+			id,
+			parent_id,
+			parent_ids,
+			name,
+			create_by,
+			update_by,
+			create_time,
+			update_time,
+			remark
+		) VALUES (
+			#{id},
+			#{parent.id},
+			#{parentIds},
+			#{name},
+			#{createBy.id},
+			#{updateBy.id},
+			#{createTime},
+			#{updateTime},
+			#{remark}
+		)
+	</insert>
+
+	<update id="update">
+		UPDATE ${businessDbName}.page_info SET
+			parent_id = #{parent.id},
+			parent_ids = #{parentIds},
+			name = #{name},
+			update_by = #{updateBy.id},
+			update_time = #{updateTime},
+			remark = #{remark}
+		WHERE id = #{id}
+	</update>
+
+	<update id="updateParentIds">
+		UPDATE ${businessDbName}.page_info SET
+			parent_id = #{parent.id},
+			parent_ids = #{parentIds}
+		WHERE id = #{id}
+	</update>
+
+	<update id="delete">
+		DELETE FROM ${businessDbName}.page_info
+		WHERE id = #{id} OR parent_ids LIKE  CONCAT('%,',#{id},',%')
+	</update>
+
+</mapper>

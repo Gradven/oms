@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.channelsharing.hongqu.oms.modules.sensitive.dao.SensitiveWordDao">
+
+	<sql id="sensitiveWordColumns">
+		a.id AS "id",
+		a.word AS "word",
+		a.create_time AS "createTime",
+		a.update_time AS "updateTime",
+		a.create_by AS "createBy.id",
+		a.update_by AS "updateBy.id",
+		a.del_flag AS "delFlag"
+	</sql>
+
+	<sql id="sensitiveWordJoins">
+	</sql>
+
+	<select id="get" resultType="SensitiveWord">
+		SELECT
+			<include refid="sensitiveWordColumns"/>
+		FROM ${businessDbName}.sensitive_word a
+		<include refid="sensitiveWordJoins"/>
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="findList" resultType="SensitiveWord">
+		SELECT
+			<include refid="sensitiveWordColumns"/>
+		FROM ${businessDbName}.sensitive_word a
+		<include refid="sensitiveWordJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="word != null and word != '' ">
+				AND a.word = #{word}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.id DESC
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="findAllList" resultType="SensitiveWord">
+		SELECT
+			<include refid="sensitiveWordColumns"/>
+		FROM ${businessDbName}.sensitive_word a
+		<include refid="sensitiveWordJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_time DESC
+			</otherwise>
+		</choose>
+	</select>
+
+	<insert id="insert">
+		INSERT INTO ${businessDbName}.sensitive_word(
+			id,
+			word,
+			create_time,
+			update_time,
+			create_by,
+			update_by,
+			del_flag
+		) VALUES (
+			#{id},
+			#{word},
+			#{createTime},
+			#{updateTime},
+			#{createBy.id},
+			#{updateBy.id},
+			#{delFlag}
+		)
+	</insert>
+
+	<update id="update">
+		UPDATE ${businessDbName}.sensitive_word SET
+			word = #{word},
+			update_time = #{updateTime},
+			update_by = #{updateBy.id}
+		WHERE id = #{id}
+	</update>
+
+	<update id="delete">
+		UPDATE ${businessDbName}.sensitive_word SET
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+
+</mapper>

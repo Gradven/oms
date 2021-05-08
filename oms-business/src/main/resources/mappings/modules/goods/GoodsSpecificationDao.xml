@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.channelsharing.hongqu.oms.modules.goods.dao.GoodsSpecificationDao">
+
+    <sql id="goodsSpecificationColumns">
+		a.id AS "id" ,
+        a.goods_id AS "goodsId" ,
+        a.specification_id AS "specificationId" ,
+        a.`value` AS "value" ,
+        a.pic_url AS "picUrl" ,
+        a.create_time AS "createTime" ,
+        a.update_time AS "updateTime" ,
+        b.`name` as "specificationName" ,
+        c.`name` as "goodsName"
+	</sql>
+
+    <sql id="goodsSpecificationJoins">
+		left join ${businessDbName}.specification_info b on a.specification_id = b.id
+        left join ${businessDbName}.goods_info c on a.goods_id = c.id
+	</sql>
+
+    <select id="get" resultType="GoodsSpecification">
+        SELECT
+        <include refid="goodsSpecificationColumns"/>
+        FROM ${businessDbName}.goods_specification a
+        <include refid="goodsSpecificationJoins"/>
+        WHERE a.id = #{id}
+    </select>
+
+    <select id="findList" resultType="GoodsSpecification">
+        SELECT
+        <include refid="goodsSpecificationColumns"/>
+        FROM ${businessDbName}.goods_specification a
+        <include refid="goodsSpecificationJoins"/>
+        <where>
+
+            <if test="id != null and id != '' ">
+                AND a.id = #{id}
+            </if>
+            <if test="goodsId != null and goodsId != '' ">
+                AND a.goods_id = #{goodsId}
+            </if>
+            <if test="specificationIds != null">
+                AND a.id IN (${specificationIds})
+            </if>
+        </where>
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY ${page.orderBy}
+            </when>
+            <otherwise>
+                ORDER BY a.id DESC
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="findByIds" resultType="GoodsSpecification" >
+        SELECT
+        a.id as "id",
+        a.value as "specificationName"
+        FROM ${businessDbName}.goods_specification a
+        <where>
+        a.id IN (${specificationIds})
+        </where>
+    </select>
+
+    <select id="findAllList" resultType="GoodsSpecification">
+        SELECT
+        <include refid="goodsSpecificationColumns"/>
+        FROM ${businessDbName}.goods_specification a
+        <include refid="goodsSpecificationJoins"/>
+        <where>
+
+        </where>
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY ${page.orderBy}
+            </when>
+            <otherwise>
+                ORDER BY a.update_time DESC
+            </otherwise>
+        </choose>
+    </select>
+
+    <insert id="insert">
+		INSERT INTO ${businessDbName}.goods_specification(
+			id,
+			goods_id,
+			specification_id,
+			value,
+			pic_url,
+			create_time,
+			update_time
+		) VALUES (
+			#{id},
+			#{goodsId},
+			#{specificationId},
+			#{value},
+			#{picUrl},
+			#{createTime},
+			#{updateTime}
+		)
+	</insert>
+
+    <update id="update">
+		UPDATE ${businessDbName}.goods_specification SET
+			goods_id = #{goodsId},
+			specification_id = #{specificationId},
+			value = #{value},
+			pic_url = #{picUrl},
+			update_time = #{updateTime}
+		WHERE id = #{id}
+	</update>
+
+    <update id="delete">
+		DELETE FROM ${businessDbName}.goods_specification
+		WHERE id = #{id}
+	</update>
+
+</mapper>

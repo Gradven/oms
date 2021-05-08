@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.channelsharing.hongqu.oms.modules.product.dao.ProductInfoDao">
+
+	<sql id="productInfoColumns">
+		a.id AS "id",
+		a.sn AS "sn",
+		a.goods_id AS "goodsId",
+		a.goods_specification_ids AS "goodsSpecificationIds",
+		a.goods_sn AS "goodsSn",
+		a.store_number AS "storeNumber",
+		a.sales_volume as "salesVolume",
+		a.retail_price AS "retailPrice",
+		a.unit_price AS "unitPrice",
+		a.profit AS "profit",
+		a.pic_url AS "picUrl",
+		a.create_time AS "createTime",
+		a.update_time AS "updateTime",
+		b.name AS "goodsName"
+	</sql>
+
+	<sql id="productInfoJoins">
+		left join ${businessDbName}.goods_info b on a.goods_id = b.id
+	</sql>
+
+	<select id="get" resultType="ProductInfo">
+		SELECT
+			<include refid="productInfoColumns"/>
+		FROM ${businessDbName}.product_info a
+		<include refid="productInfoJoins"/>
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="findList" resultType="ProductInfo">
+		SELECT
+			<include refid="productInfoColumns"/>
+		FROM ${businessDbName}.product_info a
+		<include refid="productInfoJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="goodsId != null and goodsId != '' ">
+				AND a.goods_id = #{goodsId}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.id DESC
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="findAllList" resultType="ProductInfo">
+		SELECT
+			<include refid="productInfoColumns"/>
+		FROM ${businessDbName}.product_info a
+		<include refid="productInfoJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_time DESC
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="goodsStatistics" resultType="ProductInfo">
+		select MIN(retail_price) as 'retailPrice' ,sum(store_number) as 'storeNumber' ,MIN(unit_price) as 'unitPrice',max(profit) as 'profit'
+		from ${businessDbName}.product_info a where a.goods_id = #{goodsId} and a.del_flag = 0
+
+	</select>
+
+	<insert id="insert">
+		INSERT INTO ${businessDbName}.product_info(
+			sn,
+			goods_id,
+			goods_specification_ids,
+			goods_sn,
+			store_number,
+			retail_price,
+			unit_price,
+			profit,
+			del_flag
+		) VALUES (
+			#{sn},
+			#{goodsId},
+			#{goodsSpecificationIds},
+			#{goodsSn},
+			#{storeNumber},
+			#{retailPrice},
+			#{unitPrice},
+			#{profit},
+			#{delFlag}
+		)
+	</insert>
+
+	<update id="update">
+		UPDATE ${businessDbName}.product_info SET
+			sn = #{sn},
+			goods_id = #{goodsId},
+			goods_specification_ids = #{goodsSpecificationIds},
+			goods_sn = #{goodsSn},
+			store_number = #{storeNumber},
+			retail_price = #{retailPrice},
+			unit_price = #{unitPrice},
+			profit = #{profit}
+		WHERE id = #{id}
+	</update>
+
+	<update id="delete">
+		UPDATE ${businessDbName}.product_info SET
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+
+</mapper>

@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.channelsharing.hongqu.oms.modules.specification.dao.SpecificationInfoDao">
+
+	<sql id="specificationInfoColumns">
+		a.id AS "id",
+		a.name AS "name",
+		a.sort_order AS "sortOrder",
+		a.create_time AS "createTime",
+		a.update_time AS "updateTime"
+	</sql>
+
+	<sql id="specificationInfoJoins">
+	</sql>
+
+	<select id="get" resultType="SpecificationInfo">
+		SELECT
+			<include refid="specificationInfoColumns"/>
+		FROM ${businessDbName}.specification_info a
+		<include refid="specificationInfoJoins"/>
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="findList" resultType="SpecificationInfo">
+		SELECT
+			<include refid="specificationInfoColumns"/>
+		FROM ${businessDbName}.specification_info a
+		<include refid="specificationInfoJoins"/>
+		<where>
+
+			<if test="name != null and name != '' ">
+				AND a.name LIKE
+					CONCAT('%',#{name},'%')
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.id DESC
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="findAllList" resultType="SpecificationInfo">
+		SELECT
+			<include refid="specificationInfoColumns"/>
+		FROM ${businessDbName}.specification_info a
+		<include refid="specificationInfoJoins"/>
+		<where>
+
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_time DESC
+			</otherwise>
+		</choose>
+	</select>
+
+	<insert id="insert">
+		INSERT INTO ${businessDbName}.specification_info(
+			id,
+			name,
+			sort_order,
+			create_time,
+			update_time
+		) VALUES (
+			#{id},
+			#{name},
+			#{sortOrder},
+			#{createTime},
+			#{updateTime}
+		)
+	</insert>
+
+	<update id="update">
+		UPDATE ${businessDbName}.specification_info SET
+			name = #{name},
+			sort_order = #{sortOrder},
+			update_time = #{updateTime}
+		WHERE id = #{id}
+	</update>
+
+	<update id="delete">
+		DELETE FROM ${businessDbName}.specification_info
+		WHERE id = #{id}
+	</update>
+
+</mapper>

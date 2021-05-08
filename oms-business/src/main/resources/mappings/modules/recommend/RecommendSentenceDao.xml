@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.channelsharing.hongqu.oms.modules.recommend.dao.RecommendSentenceDao">
+
+	<sql id="recommendSentenceColumns">
+		a.id AS "id",
+		a.recommend AS "recommend",
+		a.create_by AS "createBy.id",
+		a.update_by AS "updateBy.id",
+		a.create_time AS "createTime",
+		a.update_time AS "updateTime"
+	</sql>
+
+	<sql id="recommendSentenceJoins">
+	</sql>
+
+	<select id="get" resultType="RecommendSentence">
+		SELECT
+			<include refid="recommendSentenceColumns"/>
+		FROM ${businessDbName}.recommend_sentence a
+		<include refid="recommendSentenceJoins"/>
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="findList" resultType="RecommendSentence">
+		SELECT
+			<include refid="recommendSentenceColumns"/>
+		FROM ${businessDbName}.recommend_sentence a
+		<include refid="recommendSentenceJoins"/>
+		<where>
+			
+			<if test="id != null and id != '' ">
+				AND a.id = #{id}
+			</if>
+			<if test="recommend != null and recommend != '' ">
+				AND a.recommend LIKE
+					CONCAT('%',#{recommend},'%')
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.id DESC
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="findAllList" resultType="RecommendSentence">
+		SELECT
+			<include refid="recommendSentenceColumns"/>
+		FROM ${businessDbName}.recommend_sentence a
+		<include refid="recommendSentenceJoins"/>
+		<where>
+			
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_time DESC
+			</otherwise>
+		</choose>
+	</select>
+
+	<insert id="insert">
+		INSERT INTO ${businessDbName}.recommend_sentence(
+			id,
+			recommend,
+			create_by,
+			update_by,
+			create_time,
+			update_time
+		) VALUES (
+			#{id},
+			#{recommend},
+			#{createBy.id},
+			#{updateBy.id},
+			#{createTime},
+			#{updateTime}
+		)
+	</insert>
+
+	<update id="update">
+		UPDATE ${businessDbName}.recommend_sentence SET
+			recommend = #{recommend},
+			update_by = #{updateBy.id},
+			update_time = #{updateTime}
+		WHERE id = #{id}
+	</update>
+
+	<update id="delete">
+		DELETE FROM ${businessDbName}.recommend_sentence
+		WHERE id = #{id}
+	</update>
+
+</mapper>
